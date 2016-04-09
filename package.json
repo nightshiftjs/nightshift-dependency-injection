@@ -1,0 +1,26 @@
+{
+  "name": "julia-dependency-injection",
+  "description": "A Julia plugin for dependency injection",
+  "version": "0.1.0",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nightshiftjs/nightshift-dependency-injection.git"
+  },
+  "scripts": {
+    "build": "grunt build",
+    "build-coverage": "grunt build-coverage",
+    "test": "grunt test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "glob": "7.0.3",
+    "grunt": "1.0.1",
+    "grunt-contrib-clean": "1.0.0",
+    "grunt-contrib-copy": "1.0.0",
+    "grunt-contrib-jshint": "1.0.0",
+    "grunt-istanbul": "0.7.0",
+    "grunt-jasmine-nodejs": "1.5.2",
+    "pretty-error": "2.0.0"
+  }
+}
