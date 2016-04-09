@@ -6,8 +6,8 @@ module.exports = function createPluginFunction(injectorFactory) {
         return injectorFactory();
     }
 
-    return function plugin(julia) {
-        julia.di = {
+    return function plugin(nightShift) {
+        nightShift.di = {
             newInjector: newInjector
         };
     };
