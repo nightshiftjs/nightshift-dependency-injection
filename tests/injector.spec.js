@@ -1,14 +1,18 @@
 'use strict';
 
-describe('Injector', function () {
+describe('The injector', function () {
     var injectorFactoryFactory = require('../src/injector');
     var _ = require('lodash');
-    var injector, Q, wiretreeFactory, uuid, uuidv1, tree, resolveTree, resolveAllPromise, deferred, object, key;
+    var injector, Q, wiretreeFactory, uuid, uuidv1, glob, path, tree, resolveTree, resolveAllPromise, deferred, object,
+        key, module;
 
     beforeEach(function () {
         setUpQ();
         setUpWiretreeFactory();
         setUpUuid();
+        setUpGlob();
+        setUpPath();
+        setUpModule();
         object = {};
         key = 'key';
         injector = createInjector();
@@ -40,8 +44,21 @@ describe('Injector', function () {
         uuid.v1.and.returnValue(uuidv1);
     }
 
+    function setUpGlob() {
+        glob = jasmine.createSpyObj('glob', ['sync']);
+    }
+
+    function setUpPath() {
+        path = jasmine.createSpyObj('path', ['dirname']);
+    }
+
+    function setUpModule() {
+        module = jasmine.createSpyObj('module', ['require']);
+        module.filename = 'module.filename';
+    }
+
     function createInjector() {
-        var injectorFactory = injectorFactoryFactory(Q, wiretreeFactory, uuid, _);
+        var injectorFactory = injectorFactoryFactory(Q, wiretreeFactory, uuid, _, glob, path);
         return injectorFactory();
     }
 
@@ -71,4 +88,35 @@ describe('Injector', function () {
         expect(injector.get(key)).toBe(object);
         expect(tree.get).toHaveBeenCalledWith(key);
     });
+
+    it('should execute all the configuration functions which are exported by modules whose file name ends with .di.js', function () {
+        testConfigure(module, null, '*/**/*.di.js');
+    });
+
+    it('should execute all the configuration functions which are exported by modules whose file name matches the given pattern', function () {
+        var configFilePattern = '*/**/*.dependency-injection.js';
+        testConfigure(module, configFilePattern, configFilePattern);
+    });
+
+    function testConfigure(module, configFilePatternToPass, configFilePatternToAssert) {
+        var moduleDirectory = '/path/to/module/directory';
+        path.dirname.and.returnValue(moduleDirectory);
+
+        var configFile1 = 'directory1/configFile1.di.js';
+        var configFile2 = 'directory2/configFile2.di.js';
+        glob.sync.and.returnValue([configFile1, configFile2]);
+
+        var configFn1 = jasmine.createSpy('configFn1');
+        var configFn2 = jasmine.createSpy('configFn2');
+        module.require.and.returnValues(configFn1, configFn2);
+
+        injector.configure(module, configFilePatternToPass);
+
+        expect(path.dirname).toHaveBeenCalledWith(module.filename);
+        expect(glob.sync).toHaveBeenCalledWith(configFilePatternToAssert, {cwd: moduleDirectory});
+        expect(module.require).toHaveBeenCalledWith('./' + configFile1);
+        expect(configFn1).toHaveBeenCalledWith(injector);
+        expect(module.require).toHaveBeenCalledWith('./' + configFile2);
+        expect(configFn2).toHaveBeenCalledWith(injector);
+    }
 });
