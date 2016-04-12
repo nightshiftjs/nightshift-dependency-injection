@@ -45,43 +45,56 @@ function Injector(Q, wiretreeFactory, uuid, _, glob, path) {
     };
 
     /**
-     * This method can be used to automatically register for dependency injection all the objects which are listed in
-     * configuration modules. A configuration module just has to export a function that receives the injector as a
-     * parameter. By using that injector, the function can register whatever objects for dependency injection, typically
-     * objects which are exported by modules located in the same folder.
+     * The injector is typically configured by the main module. However, registering all the objects in one single
+     * module can be cumbersome. That's why there is a way to spread the configuration of the injector across many
+     * modules.
      *
-     * As an example, let's consider the structure below:
+     * As an example, let's consider the structure below.
      * <pre><code>
-     *      index.js
-     *          |_ feature1/
-     *              |_ feature1.module1.js
-     *              |_ feature1.module2.js
-     *              |_ feature1.di.js
-     *          |_ feature2/
-     *              |_ feature2.module1.js
-     *              |_ feature2.module2.js
-     *              |_ feature2.di.js
+     *      /
+     *      |_index.js
+     *      |_ logger/
+     *          |_ logger.js
+     *          |_ logger.di.js
+     *      |_ greeter/
+     *          |_ greeter.js
+     *          |_ greeter.di.js
      * </code></pre>
      *
-     * <i>feature1.di.js</i> registers <i>feature1.module1.js</i> and <i>feature1.module2.js</i>.
+     * The injector is able to search for all the modules whose file name matches a given pattern. By default, if no
+     * pattern is specified, then the injector will search for all the files ending with <i>.di.js</i>. Those modules
+     * are expected to export functions which receive the injector as a parameter. Such a function can be seen as a hook
+     * where new objects can be registered in the injector.
+     *
+     * As an example, let's have a look at the file <i>greeter.di.js</i>.
      * <pre><code>
      *      module.exports = function (injector) {
-     *          injector.register(require('./feature1.module1'), 'key1');
-     *          injector.register(require('./feature1.module2'), 'key2');
+     *          injector.register(require('./greeter'), 'greeter');
      *      };
      * </code></pre>
      *
-     * <i>feature2.di.js</i> registers <i>feature2.module1.js</i> and <i>feature2.module2.js</i>.
+     * Let's also have a look at the file <i>logger.di.js</i>.
      * <pre><code>
      *      module.exports = function (injector) {
-     *          injector.register(require('./feature2.module1'), 'key3');
-     *          injector.register(require('./feature2.module2'), 'key4');
+     *          injector.register(require('./logger'), 'logger');
      *      };
      * </code></pre>
      *
-     * <i>index.js</i> makes sure that the configuration functions are invoked.
+     * The only thing that needs to be done in the file <i>index.js</i> is making sure that the injector is configured.
      * <pre><code>
-     *      nightShift.di.configure(module);
+     *      // plug the dependency injection
+     *      var nightShift = require('nightshift-core');
+     *      var di = require('nightshift-dependency-injection');
+     *      nightShift.plugin(di);
+     *
+     *      // create a new injector
+     *      var injector = nightShift.di.newInjector();
+     *
+     *      // configure the injector
+     *      injector.configure(module);
+     *
+     *      // resolve the dependencies
+     *      injector.resolveAll().then(function () {...});
      * </code></pre>
      *
      * @param {Object} module the module that takes care of configuring the dependency injection, typically the main module
