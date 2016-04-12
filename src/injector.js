@@ -63,8 +63,8 @@ function Injector(Q, wiretreeFactory, uuid, _, glob, path) {
      *
      * The injector is able to search for all the modules whose file name matches a given pattern. By default, if no
      * pattern is specified, then the injector will search for all the files ending with <i>.di.js</i>. Those modules
-     * are expected to export functions which receive the injector as a parameter. Such a function can be seen as a hook
-     * where new objects can be registered in the injector.
+     * are expected to export functions which receive the injector as a parameter. Such a function can register new
+     * objects in the injector.
      *
      * As an example, let's have a look at the file <i>greeter.di.js</i>.
      * <pre><code>
