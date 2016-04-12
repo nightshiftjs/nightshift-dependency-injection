@@ -1,6 +1,6 @@
 'use strict';
 
-describe('The NightShift plugin for dependency injection', function () {
+describe('The plugin', function () {
 
     var pluginFactory = require('../src/plugin');
     var nightShift, plugin, injector, injectorFactory;
