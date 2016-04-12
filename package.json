@@ -26,6 +26,7 @@
     "grunt-contrib-jshint": "1.0.0",
     "grunt-istanbul": "0.7.0",
     "grunt-jasmine-nodejs": "1.5.2",
+    "nightshift-core": "0.1.0",
     "pretty-error": "2.0.0"
   }
 }
