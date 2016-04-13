@@ -120,8 +120,26 @@ injector.resolveAll().then(function () {...});
 
 As you have probably noticed, the structural coupling that can exist between the modules has completely disappeared. There is no need to `require('../../../...')` anymore! 
 
-## Tests
+### register(object, key, isToBeResolved)
+The method `injector.register(object, key, isToBeResolved)` registers the given object for dependency injection. 
 
+- `object` can be either a factory function expecting dependencies, either any plain object (e.g. global objects, third-party objects).
+- `key` is the unique identifier of the object in the injector. It is used to inject the object in other objects: the dependencies expected by a factory function are resolved by matching parameter names to keys. The key can also be used to retrieve the object from the injector by using `injector.get(key)`. The key is optional. If no key is given, then the object will be resolved but it cannot be injected. This is useful for void functions relying on dependencies in order to do some setup.
+- `isToBeResolved` is a boolean indicating whether the given object is a factory function expecting dependencies (`isToBeResolved = true`) or a plain object (`isToBeResolved = false`). It defaults to `true`. If no key is given, then it is always set to `true`.  
+
+### resolveAll()
+The method `injector.resolveAll()` resolves all the objects which have been registered for dependency injection. It invokes the factory functions with the dependencies they expect. It makes the resulting objects available for dependency injection. It returns a promise.
+
+### get(key)
+The method `injector.get(key)` returns the object with the given key.
+ 
+### configure(module, configFilePattern)
+The method `injector.configure(module, configFilePattern)` configures the injector by executing the configuration functions which are exported by the modules whose file name matches the given pattern.
+
+- `module` is the Node.js module that takes care of configuring the injector, typically the main module.
+- `configFilePattern` is the file pattern used to search for configuration modules. By default, it matches all the files ending with _.di.js_ and located either next to, either below the given module. Note that the pattern must be relative to that module. 
+
+## Tests
 ```
 npm install && npm test
 ```

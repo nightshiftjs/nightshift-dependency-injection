@@ -7,9 +7,19 @@ function Injector(Q, wiretreeFactory, uuid, _, glob, path) {
     /**
      * This method registers the given object for dependency injection.
      *
-     * @param {Object} object the object to register for dependency injection
-     * @param {String} [key] the key to use for injecting the object (if no key is given, then the object can be resolved but not injected)
-     * @param {Boolean} [isToBeResolved=true] whether or not the object needs to be resolved before being injected
+     * @param {Object} object the object can be either a factory function expecting dependencies, either any plain
+     * object (e.g. global objects, third-party objects).
+     *
+     * @param {String} [key] the key is the unique identifier of the object in the injector. It is used to inject the
+     * object in other objects: the dependencies expected by a factory function are resolved by matching parameter names
+     * to keys. The key can also be used to retrieve the object from the injector by using <i>injector.get(key)</i>. The
+     * key is optional. If no key is given, then the object will be resolved but it cannot be injected. This is useful
+     * for void functions relying on dependencies in order to do some setup.
+     *
+     * @param {Boolean} [isToBeResolved=true] <i>isToBeResolved</i> is a boolean indicating whether the given object is
+     * a factory function expecting dependencies (<i>isToBeResolved = true</i>) or a plain object
+     * (<i>isToBeResolved = false</i>). It defaults to <i>true</i>. If no key is given, then it is always set to
+     * <i>true</i>.
      */
     injector.register = function (object, key, isToBeResolved) {
         if (_.isString(key)) {
@@ -22,7 +32,8 @@ function Injector(Q, wiretreeFactory, uuid, _, glob, path) {
     };
 
     /**
-     * This method resolves all the objects which have been registered for dependency injection.
+     * This method resolves all the objects which have been registered for dependency injection. It invokes the factory
+     * functions with the dependencies they expect. It makes the resulting objects available for dependency injection.
      *
      * @returns {Promise} the promise to resolve all the registered objects
      */
@@ -38,6 +49,7 @@ function Injector(Q, wiretreeFactory, uuid, _, glob, path) {
      * This method returns the object with the given key.
      *
      * @param {String} key the key of the object to get
+     *
      * @returns {Object} the object with the given key
      */
     injector.get = function (key) {
@@ -97,9 +109,11 @@ function Injector(Q, wiretreeFactory, uuid, _, glob, path) {
      *      injector.resolveAll().then(function () {...});
      * </code></pre>
      *
-     * @param {Object} module the module that takes care of configuring the dependency injection, typically the main module
+     * @param {Object} module the Node.js module that takes care of configuring the dependency injection, typically the
+     * main module
+     *
      * @param {String} [configFilePattern] the file pattern used to search for configuration modules, by default
-     * all the files ending with .di.js and located either next to, either below the given module (note that the
+     * all the files ending with <i>.di.js</i> and located either next to, either below the given module (note that the
      * pattern must be relative to that module)
      */
     injector.configure = function (module, configFilePattern) {
