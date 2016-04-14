@@ -115,7 +115,10 @@ var injector = nightShift.di.newInjector();
 injector.configure(module);
 
 // resolve the dependencies
-injector.resolveAll().then(function () {...});
+injector.resolveAll().then(function () {
+    var greeter = injector.get('greeter');
+    greeter('John Doe');
+});
 ```
 
 ### register(object, key, isToBeResolved)
