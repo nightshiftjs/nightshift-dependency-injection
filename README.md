@@ -87,7 +87,7 @@ The injector is typically configured by the main module. However, registering al
 The injector is able to search for all the modules whose file name matches a given pattern. By default, if no pattern is specified, then the injector will search for all the files ending with _.di.js_. Those modules are expected to export functions which receive the injector as a parameter. Such a function can register new objects in the injector. As an example, let's have a look at the file _greeter.di.js_.
 
 ```javascript
-module.exports = function (injector) {
+module.exports = function configure(injector) {
     injector.register(require('./greeter'), 'greeter');
 };
 ```
@@ -95,7 +95,7 @@ module.exports = function (injector) {
 Let's also have a look at the file _logger.di.js_.
 
 ```javascript
-module.exports = function (injector) {
+module.exports = function configure(injector) {
     injector.register(require('./logger'), 'logger');
 };
 ```
