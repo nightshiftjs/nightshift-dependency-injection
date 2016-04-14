@@ -118,7 +118,13 @@ injector.configure(module);
 injector.resolveAll().then(function () {...});
 ```
 
-As you have probably noticed, the structural coupling that can exist between the modules has completely disappeared. There is no need to `require('../../../...')` anymore! 
+### Pros
+- The modules are more testable.
+- The modules are decoupled from each other.
+- The dependency injection is non-intrusive.
+- The dependency injection can be plugged in existing code.
+- The structural coupling that can exist between the modules disappears: forget about `require('../../../...')`!
+- Since the dependencies are resolved based on theirs names, the naming conventions are enforced. An object will always have the same name and its usages will therefore be easy to find.
 
 ### register(object, key, isToBeResolved)
 The method `injector.register(object, key, isToBeResolved)` registers the given object for dependency injection. 
@@ -140,8 +146,19 @@ The method `injector.configure(module, configFilePattern)` configures the inject
 - `configFilePattern` is the file pattern used to search for configuration modules. By default, it matches all the files ending with _.di.js_ and located either next to, either below the given module. Note that the pattern must be relative to that module. 
 
 ## Tests
+The tests can be executed by running the command below.
 ```
 npm install && npm test
+```
+
+The test coverage can be checked by running the command below. It executes the tests and it generates a coverage report in _build/coverage/index.html_.
+```
+npm install && npm build-coverage
+```
+
+The quality of the code can be checked by running the command below. It detects potential problems in the code with JSHint, it executes the tests and it generates a coverage report. 
+```
+npm install && npm build
 ```
 
 ## Note
