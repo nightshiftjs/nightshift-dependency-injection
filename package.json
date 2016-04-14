@@ -1,6 +1,6 @@
 {
-  "name": "julia-dependency-injection",
-  "description": "A Julia plugin for dependency injection",
+  "name": "nightshift-dependency-injection",
+  "description": "NightShift plugin for dependency injection",
   "version": "0.1.0",
   "main": "src/index.js",
   "repository": {
