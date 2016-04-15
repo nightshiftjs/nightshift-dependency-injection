@@ -1,5 +1,5 @@
 # nightshift-dependency-injection
-Dependency injection is a cornerstone of NightShift. It reduces the coupling between the modules and increases their testability.
+Dependency injection is a cornerstone of [NightShift](https://github.com/nightshiftjs). It reduces the coupling between the modules and increases their testability.
 
 ## Less Coupling, More Testability
 A module that uses `require` to get its dependencies can hardly be tested in isolation, i.e. tested without (re-)testing its dependencies. As an example, because the `greeter` below requires a `logger`, that `logger` will be involved when testing the `greeter`.
