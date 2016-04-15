@@ -3,6 +3,7 @@
   "description": "NightShift plugin for dependency injection",
   "version": "0.1.0",
   "main": "src/index.js",
+  "keywords": ["dependency injection", "plugin", "framework", "nightshift"],
   "repository": {
     "type": "git",
     "url": "https://github.com/nightshiftjs/nightshift-dependency-injection.git"
