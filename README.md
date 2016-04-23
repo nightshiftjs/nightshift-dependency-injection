@@ -2,7 +2,7 @@
 Dependency injection is a cornerstone of [NightShift](https://github.com/nightshiftjs). It reduces the coupling between the modules and increases their testability.
 
 ## Less Coupling, More Testability
-A module that uses `require` to get its dependencies can hardly be tested in isolation, i.e. tested without (re-)testing its dependencies. As an example, because the `greeter` below requires a `logger`, that `logger` will be involved when testing the `greeter`.
+A module that uses `require` to get its dependencies can hardly be tested in isolation, i.e. tested without retesting its dependencies. As an example, because the `greeter` below requires a `logger`, that `logger` will be involved when testing the `greeter`.
 
 ```javascript
 var logger = require('logger');
@@ -148,7 +148,35 @@ The method `injector.configure(module, configFilePattern)` configures the inject
 - The structural coupling that can exist between the modules disappears: forget about `require('../../../...')`!
 - Since the dependencies are resolved based on theirs names, the naming conventions are enforced. An object will always have the same name and its usages will therefore be easy to find.
 
-## Tests
+## Cons
+Still trying to find one...
+
+## Tips
+- You can make `nightShift` available for dependency injection.
+
+```javascript
+// configure the injector
+injector.register(nightShift, 'nightShift', false);
+injector.configure(module);
+```
+ 
+- You can make specific parts of `nightShift` available for dependency injection.
+
+```javascript
+// configure the injector
+injector.register(nightShift.functions, 'functions', false);
+injector.configure(module);
+```
+
+- You can make global objects available for dependency injection. This makes it possible to mock them when testing.
+
+```javascript
+// configure the injector
+injector.register(console, 'console', false);
+injector.configure(module);
+```
+
+## Contribute
 The tests can be executed by running the command below.
 ```
 npm install && npm test
