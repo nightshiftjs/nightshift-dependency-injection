@@ -81,7 +81,7 @@ describe('The injector', function () {
         expect(injector.resolveAll()).toBe(resolveAllPromise);
         expect(tree.resolve).toHaveBeenCalled();
         resolveTree();
-        expect(deferred.resolve).toHaveBeenCalled();
+        expect(deferred.resolve).toHaveBeenCalledWith(injector);
     });
 
     it('should return the object with the given key', function () {

@@ -55,4 +55,13 @@ describe('The dependency injection', function () {
             done();
         });
     });
+
+    it('should fulfill the promise to resolve the dependencies with the injector', function (done) {
+        injector.register(console, 'console', false);
+        injector.register(loggerFactory, 'logger');
+        injector.resolveAll().then(function (inj) {
+            expect(inj).toBe(injector);
+            done();
+        });
+    });
 });

@@ -40,7 +40,7 @@ function Injector(Q, wiretreeFactory, uuid, _, glob, path) {
     injector.resolveAll = function () {
         var deferred = Q.defer();
         tree.resolve(function () {
-            deferred.resolve();
+            deferred.resolve(injector);
         });
         return deferred.promise;
     };
