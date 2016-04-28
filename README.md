@@ -73,7 +73,7 @@ greeter('John Doe');
 
 The injector is typically configured by the main module. However, registering all the objects in one single module can be cumbersome. That's why there is a way to spread the configuration of the injector across many modules. As an example, let's consider the structure below.
 
-```
+```javascript
     /
     |_index.js                      
     |_ logger/              
@@ -129,7 +129,7 @@ The method `injector.register(object, key, isToBeResolved)` registers the given 
 - `isToBeResolved` is a boolean indicating whether the given object is a factory function expecting dependencies (`isToBeResolved = true`) or a plain object (`isToBeResolved = false`). It defaults to `true`. If no key is given, then it is always set to `true`.  
 
 ### resolveAll()
-The method `injector.resolveAll()` resolves all the objects which have been registered for dependency injection. It invokes the factory functions with the dependencies they expect. It makes the resulting objects available for dependency injection. It returns a promise.
+The method `injector.resolveAll()` resolves all the objects which have been registered for dependency injection. It invokes the factory functions with the dependencies they expect. It makes the resulting objects available for dependency injection. It returns a promise that is fulfilled with the ```injector```.
 
 ### get(key)
 The method `injector.get(key)` returns the object with the given key.
@@ -139,6 +139,107 @@ The method `injector.configure(module, configFilePattern)` configures the inject
 
 - `module` is the Node.js module that takes care of configuring the injector, typically the main module.
 - `configFilePattern` is the file pattern used to search for configuration modules. By default, it matches all the files ending with _.di.js_ and located either next to, either below the given module. Note that the pattern must be relative to that module. 
+
+## Real Life Example
+### Booting a web application
+Let's take as an example a web application whose source code is structured as below.
+
+```javascript
+    /
+    |_ app.js               // the main module
+    |_ boot.js              // the module in charge of booting the application          
+    |_ di.js                // the module in charge of configuring the injector
+    |_ env.js               // the module in charge of configuring the environment
+    |_ feature1/            // a feature            
+        |_ ...              // whatever module(s) for feature 1
+        |_ feature1.di.js   // the module in charge of enriching the injector with feature 1     
+    |_ feature2/            // another feature         
+        |_ ...              // whatever module(s) for feature 2
+        |_ feature2.di.js   // the module in charge of enriching the injector with feature 2
+    |_ ...                  // other features
+```
+
+Let's first have a look at _di.js_, the module that is responsible for configuring the injector.
+
+```javascript
+module.exports = function configureDependencyInjection(nightShift) {
+    // create a new injector
+    var injector = nightShift.di.newInjector();
+
+    // enrich the injector with global variables
+    injector.register(console, 'console', false);
+    injector.register(process, 'process', false);
+
+    // enrich the injector with external dependencies
+    injector.register(require('http'), 'http', false);
+
+    // enrich the injector with internal dependencies
+    injector.register(require('./boot'), 'boot');
+    injector.register(require('./env'), 'configureEnvironment');
+    injector.configure(module);
+
+    // promise to resolve the dependencies
+    return injector.resolveAll();
+};
+```
+
+As you can see, different things are made available for dependency injection: global variables, external and internal dependencies. Most of the internal dependencies are registered automatically by using ```injector.configure(module)```.
+
+Knowing what is available for dependency injection, let's now have a look at the main module, _app.js_.
+
+```javascript
+// configure NightShift
+var nightShift = require('nightshift-core');
+var di = require('nightshift-dependency-injection');
+nightShift.plugin(di);
+
+// configure the dependency injection
+require('./di')(nightShift).then(function (injector) {
+
+    // configure the environment (defaults to 'development')
+    var env = process.env.NODE_ENV || 'development';
+    var config = injector.get('configureEnvironment')(env);
+
+    // boot
+    injector.get('boot')(config);
+});
+```
+
+_app.js_ and _di.js_ are the only modules for which dependency injection is not available. All the other modules can benefit from dependency injection. Let's have a look at _env.js_, the module that is responsible for configuring the environment.
+ 
+```javascript
+module.exports = function createEnvironmentConfigurationFunction(process) {
+    return function configureEnvironment(env) {
+        return {
+            // the environment (e.g. development, test, production)
+            env: env,
+
+            // the port the server is running on
+            port: parseInt(process.env.PORT) || 9000
+        };
+    };
+};
+```
+
+Based on the configuration object created above, the application can be booted by the module _boot.js_.
+
+```javascript
+module.exports = function createBootFunction(http) {
+    return function boot(config) {
+
+        // Create HTTP server
+        var server = http.createServer(function (request, response) {
+            response.writeHead(200, {'Content-Type': 'text/plain'});
+            response.end('Welcome to ' + config.env);
+        });
+
+        // Start HTTP server
+        server.listen(config.port);
+    };
+};
+```
+
+Such an implementation clearly separates the concerns in different modules which are easy to test.
 
 ## Pros
 - The modules are more testable.
