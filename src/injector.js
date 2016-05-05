@@ -1,6 +1,6 @@
 'use strict';
 
-function Injector(Q, wiretreeFactory, uuid, _, glob, path) {
+function Injector(promises, wiretreeFactory, uuid, _, glob, path) {
     var injector = this;
     var tree = wiretreeFactory();
 
@@ -38,7 +38,7 @@ function Injector(Q, wiretreeFactory, uuid, _, glob, path) {
      * @returns {Promise} the promise to resolve all the registered objects
      */
     injector.resolveAll = function () {
-        var deferred = Q.defer();
+        var deferred = promises.defer();
         tree.resolve(function () {
             deferred.resolve(injector);
         });
@@ -128,8 +128,8 @@ function Injector(Q, wiretreeFactory, uuid, _, glob, path) {
     };
 }
 
-module.exports = function createInjectorFactoryNoArg(Q, wiretreeFactory, uuid, _, glob, path) {
+module.exports = function createInjectorFactoryNoArg(promises, wiretreeFactory, uuid, _, glob, path) {
     return function () {
-        return new Injector(Q, wiretreeFactory, uuid, _, glob, path);
+        return new Injector(promises, wiretreeFactory, uuid, _, glob, path);
     };
 };
