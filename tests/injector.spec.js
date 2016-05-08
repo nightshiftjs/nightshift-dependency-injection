@@ -3,11 +3,11 @@
 describe('The injector', function () {
     var injectorFactoryFactory = require('../src/injector');
     var _ = require('lodash');
-    var injector, Q, wiretreeFactory, uuid, uuidv1, glob, path, tree, resolveTree, resolveAllPromise, deferred, object,
+    var injector, promises, wiretreeFactory, uuid, uuidv1, glob, path, tree, resolveTree, resolveAllPromise, deferred, object,
         key, module;
 
     beforeEach(function () {
-        setUpQ();
+        setUpPromises();
         setUpWiretreeFactory();
         setUpUuid();
         setUpGlob();
@@ -18,12 +18,12 @@ describe('The injector', function () {
         injector = createInjector();
     });
 
-    function setUpQ() {
+    function setUpPromises() {
         resolveAllPromise = 'resolveAllPromise';
         deferred = jasmine.createSpyObj('deferred', ['resolve']);
         deferred.promise = resolveAllPromise;
-        Q = jasmine.createSpyObj('Q', ['defer']);
-        Q.defer.and.returnValue(deferred);
+        promises = jasmine.createSpyObj('promises', ['defer']);
+        promises.defer.and.returnValue(deferred);
     }
 
     function setUpWiretreeFactory() {
@@ -58,7 +58,7 @@ describe('The injector', function () {
     }
 
     function createInjector() {
-        var injectorFactory = injectorFactoryFactory(Q, wiretreeFactory, uuid, _, glob, path);
+        var injectorFactory = injectorFactoryFactory(promises, wiretreeFactory, uuid, _, glob, path);
         return injectorFactory();
     }
 
