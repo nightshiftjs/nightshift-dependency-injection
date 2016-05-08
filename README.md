@@ -1,4 +1,11 @@
 # nightshift-dependency-injection
+
+[![Build Status][build]](https://travis-ci.org/nightshiftjs/nightshift-dependency-injection) [![Coverage Status][coverage]](https://coveralls.io/github/nightshiftjs/nightshift-dependency-injection) [![Dependencies Status][deps]](https://david-dm.org/nightshiftjs/nightshift-dependency-injection)
+
+[build]: https://img.shields.io/travis/nightshiftjs/nightshift-dependency-injection/promises.svg?maxAge=2592000&style=flat
+[coverage]: https://img.shields.io/coveralls/nightshiftjs/nightshift-dependency-injection/promises.svg?maxAge=2592000&style=flat
+[deps]: https://img.shields.io/david/nightshiftjs/nightshift-dependency-injection/promises.svg?maxAge=2592000&style=flat
+
 Dependency injection is a cornerstone of [NightShift](https://github.com/nightshiftjs). It reduces the coupling between the modules and increases their testability.
 
 ## Less Coupling, More Testability

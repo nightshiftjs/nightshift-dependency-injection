@@ -70,7 +70,7 @@ module.exports = function (grunt) {
         makeReport: {
             src: '<%= coverage_tmp %>/coverage.json',
             options: {
-                type: 'html',
+                type: 'lcov',
                 dir: '<%= coverage %>',
                 print: 'detail'
             }
@@ -86,6 +86,12 @@ module.exports = function (grunt) {
                     }
                 ]
             }
+        },
+
+        coveralls: {
+            istanbul: {
+                src: '<%= coverage %>/lcov.info'
+            }
         }
     });
 
@@ -100,6 +106,9 @@ module.exports = function (grunt) {
 
     // plugin for computing test coverage (see https://github.com/taichi/grunt-istanbul)
     grunt.loadNpmTasks('grunt-istanbul');
+
+    // plugin for reporting test coverage to coveralls.io (see https://github.com/pimterry/grunt-coveralls)
+    grunt.loadNpmTasks('grunt-coveralls');
 
     // plugin for copying files (see https://github.com/gruntjs/grunt-contrib-copy)
     grunt.loadNpmTasks('grunt-contrib-copy');
@@ -130,6 +139,10 @@ module.exports = function (grunt) {
         'clean:build',
         'jshint',
         'build-coverage']);
+
+    grunt.task.registerTask('ci', [
+        'build',
+        'coveralls']);
 
     grunt.task.registerTask('build-coverage', [
         'clean:coverage',
